@@ -88,30 +88,6 @@ def read_item(*, username: str = Header(None),
             return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
         return json_result
 
-        # result = auth_object.sharepoint_get_request(endpoint_uri)
-        # if result.status_code == requests.codes.ok:
-        #     json_result = result.json()['d']['results']
-        #     if is_check_query == '1':
-        #         restart = True
-        #         while restart:
-        #             restart = False
-        #             for element in json_result:
-        #                 if str(element['ActivationCode']) == ActivationCode:
-        #                     restart = True
-        #                     ActivationCode = ''.join(random.choices(string.digits, k=10))
-        #
-        #         for element in json_result:
-        #             if element['BatterySerial'] == battery_serial:
-        #                 if element['isActive'] != "1":
-        #                     return {"status": 200, "item": element, "ActivationCode": ActivationCode}
-        #                 return {"status": 200, "item": element}
-        #         return {"status": 404, "error_type": "no such item", "error_result": "no result"}
-        #     return json_result
-        # else:
-        #     return {"status": "error on items", "error_type": "no items in list", "error_result": result}
-    # else:  # login unsuccessfully
-    #     return {"status": "error on auth", "error_type": "failed auth", "error_result": result}
-
 
 @app.get("/batteryitems/mybatteries")
 def find_batteries(*, username: str = Header(None),
@@ -241,3 +217,51 @@ def update_item(*, username: str = Header(None),
     ActivationCode = ''.join(random.choices(string.digits, k=10))
 
     return {"status": r.status_code, "ActivationCode": ActivationCode, "item": r.json()['d']}
+
+
+@app.get("/batteryitems/agents_sales")
+def read_agents_sales_requests(*,
+                               username: str = Header(None),
+                               password: str = Header(None),
+                               domain: str = Header(None),
+                               site_url: str = Header(None),
+                               endpoint_uri: str = Header(None),
+                               filter: str = Header(None)):
+    auth_object = UserAuthentication(username, password, domain, site_url)
+    result = auth_object.authenticate()
+    sharepoint_contextinfo_url = site_url + '/_api/contextinfo'
+
+    auth = HttpNtlmAuth(username, password)
+
+    headers = {
+        "Accept": "application/json; odata=verbose",
+        "Content-Type": "application/json; odata=verbose",
+        "odata": "verbose",
+        "X-RequestForceAuthentication": "true"
+    }
+
+    # First of all get the context info
+    r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
+
+    form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
+
+    # We want to extract all the list presents in the site
+    endpoint_uri = "_api/web/lists/getbytitle('SalesHeader')/items"
+    if result:  # login successfully
+        result = auth_object.sharepoint_get_request(endpoint_uri)
+        if result.status_code == requests.codes.ok:
+            if len(result.json()['d']['results']) == 0:
+                return {"status": 404, "error_type": "no such item", "error_result": "no result"}
+            if filter == None:
+                json_result = result.json()['d']['results']
+                return {"status": 200, "item": json_result}
+            else:
+                result = auth_object.sharepoint_get_request(endpoint_uri + "?" +filter)
+                if len(result.json()['d']['results']) == 0:
+                    return {"status": 404, "error_type": "no such item", "error_result": "no result"}
+                json_result = result.json()['d']['results']
+                return {"status": 200, "item": json_result}
+
+        return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
+    else:
+        return result
