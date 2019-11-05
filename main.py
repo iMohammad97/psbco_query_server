@@ -256,7 +256,7 @@ def read_agents_sales_requests(*,
                 json_result = result.json()['d']['results']
                 return {"status": 200, "item": json_result}
             else:
-                result = auth_object.sharepoint_get_request(endpoint_uri + "?" +filter)
+                result = auth_object.sharepoint_get_request(endpoint_uri + "?" + filter)
                 if len(result.json()['d']['results']) == 0:
                     return {"status": 404, "error_type": "no such item", "error_result": "no result"}
                 json_result = result.json()['d']['results']
@@ -266,13 +266,13 @@ def read_agents_sales_requests(*,
     else:
         return result
 
-@app.get("/batteryitems/agents_sales_details")
-def read_agents_sales_requests(*,
+
+@app.get("/batteryitems/agents_check")
+def read_agents_usernames(*,
                                username: str = Header(None),
                                password: str = Header(None),
                                domain: str = Header(None),
-                               site_url: str = Header(None),
-                               filter: str = Header(None)):
+                               site_url: str = Header(None)):
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
     sharepoint_contextinfo_url = site_url + '/_api/contextinfo'
@@ -292,15 +292,58 @@ def read_agents_sales_requests(*,
     form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
 
     # We want to extract all the list presents in the site
-    endpoint_uri = "_api/web/lists/getbytitle('SalesDetails')/items" + "?" + filter
+    endpoint_uri = "/_api/web/currentUser"
     if result:  # login successfully
         result = auth_object.sharepoint_get_request(endpoint_uri)
         if result.status_code == requests.codes.ok:
-            if len(result.json()['d']['results']) == 0:
-                return {"status": 404, "error_type": "no such item", "error_result": "no result"}
-            else:
-                json_result = result.json()['d']['results']
-                return {"status": 200, "item": json_result}
+            json_result = result.json()['d']
+            return {"status": 200, "item": json_result}
         return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
     else:
-        return result
+        return {"status": "fail", "result": result}
+
+
+@app.get("/batteryitems/agents_sales_request")
+def read_agents_sales_requests(*,
+                               username: str = Header(None),
+                               password: str = Header(None),
+                               domain: str = Header(None),
+                               site_url: str = Header(None),
+                               endpoint_uri: str = Header(None)):
+    sharepoint_contextinfo_url = site_url + '_api/contextinfo'
+
+    headers = {
+        "Accept": "application/json; odata=verbose",
+        "Content-Type": "application/json; odata=verbose",
+        "odata": "verbose",
+        "X-RequestForceAuthentication": "true"
+    }
+
+    auth = HttpNtlmAuth(username, password)
+
+    # First of all get the context info
+    r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
+    form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
+
+    api_page = site_url + endpoint_uri
+
+    update_headers = {
+        "Accept": "application/json; odata=verbose",
+        "Content-Type": "application/json; odata=verbose",
+        "odata": "verbose",
+        "X-RequestForceAuthentication": "true",
+        "X-RequestDigest": form_digest_value,
+        # "IF-MATCH": "*",
+        # "X-HTTP-Method": "MERGE"
+    }
+
+    payload = {'__metadata': {'type': 'SP.Data.BatteryListTestListItem'},
+               'BatterySerial': battery_serial,
+               'PackingDate': packing_date,
+               'GurrantyEndDate': gurranty_end_date,
+               'Title': 'New Item by Application'}
+
+    r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
+    ActivationCode = ''.join(random.choices(string.digits, k=10))
+
+    return {"status": r.status_code, "ActivationCode": ActivationCode, "item": r.json()['d']}
