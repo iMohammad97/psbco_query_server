@@ -269,10 +269,10 @@ def read_agents_sales_requests(*,
 
 @app.get("/batteryitems/agents_check")
 def read_agents_usernames(*,
-                               username: str = Header(None),
-                               password: str = Header(None),
-                               domain: str = Header(None),
-                               site_url: str = Header(None)):
+                          username: str = Header(None),
+                          password: str = Header(None),
+                          domain: str = Header(None),
+                          site_url: str = Header(None)):
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
     sharepoint_contextinfo_url = site_url + '/_api/contextinfo'
@@ -347,3 +347,42 @@ def read_agents_sales_requests(*,
     ActivationCode = ''.join(random.choices(string.digits, k=10))
 
     return {"status": r.status_code, "ActivationCode": ActivationCode, "item": r.json()['d']}
+
+
+@app.get("/batteryitems/agents_sales_details")
+def read_agents_sales_requests(*,
+                               username: str = Header(None),
+                               password: str = Header(None),
+                               domain: str = Header(None),
+                               site_url: str = Header(None),
+                               filter: str = Header(None)):
+    auth_object = UserAuthentication(username, password, domain, site_url)
+    result = auth_object.authenticate()
+    sharepoint_contextinfo_url = site_url + '/_api/contextinfo'
+
+    auth = HttpNtlmAuth(username, password)
+
+    headers = {
+        "Accept": "application/json; odata=verbose",
+        "Content-Type": "application/json; odata=verbose",
+        "odata": "verbose",
+        "X-RequestForceAuthentication": "true"
+    }
+
+    # First of all get the context info
+    r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
+
+    form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
+    # We want to extract all the list presents in the site
+    endpoint_uri = "_api/web/lists/getbytitle('SalesDetails')/items" + "?" + filter
+    if result:  # login successfully
+        result = auth_object.sharepoint_get_request(endpoint_uri)
+        if result.status_code == requests.codes.ok:
+            if len(result.json()['d']['results']) == 0:
+                return {"status": 404, "error_type": "no such item", "error_result": "no result"}
+            else:
+                json_result = result.json()['d']['results']
+                return {"status": 200, "item": json_result}
+        return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
+    else:
+        return result
