@@ -386,3 +386,50 @@ def read_agents_sales_requests(*,
         return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
     else:
         return result
+
+@app.get("/batteryitems/agents_services")
+def read_agents_services_requests(*,
+                               username: str = Header(None),
+                               password: str = Header(None),
+                               domain: str = Header(None),
+                               site_url: str = Header(None),
+                               endpoint_uri: str = Header(None),
+                               filter: str = Header(None)):
+    auth_object = UserAuthentication(username, password, domain, site_url)
+    result = auth_object.authenticate()
+    sharepoint_contextinfo_url = site_url + '/_api/contextinfo'
+
+    auth = HttpNtlmAuth(username, password)
+
+    headers = {
+        "Accept": "application/json; odata=verbose",
+        "Content-Type": "application/json; odata=verbose",
+        "odata": "verbose",
+        "X-RequestForceAuthentication": "true"
+    }
+
+    # First of all get the context info
+    r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
+
+    form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
+
+    # We want to extract all the list presents in the site
+    endpoint_uri = "_api/web/lists/getbytitle('CustomerGurrantyRequest')/items"
+    if result:  # login successfully
+        result = auth_object.sharepoint_get_request(endpoint_uri)
+        if result.status_code == requests.codes.ok:
+            if len(result.json()['d']['results']) == 0:
+                return {"status": 404, "error_type": "no such item", "error_result": "no result"}
+            if filter == None:
+                json_result = result.json()['d']['results']
+                return {"status": 200, "item": json_result}
+            else:
+                result = auth_object.sharepoint_get_request(endpoint_uri + "?" + filter)
+                if len(result.json()['d']['results']) == 0:
+                    return {"status": 404, "error_type": "no such item", "error_result": "no result"}
+                json_result = result.json()['d']['results']
+                return {"status": 200, "item": json_result}
+
+        return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
+    else:
+        return result
