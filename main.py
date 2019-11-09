@@ -387,14 +387,15 @@ def read_agents_sales_requests(*,
     else:
         return result
 
+
 @app.get("/batteryitems/agents_services")
 def read_agents_services_requests(*,
-                               username: str = Header(None),
-                               password: str = Header(None),
-                               domain: str = Header(None),
-                               site_url: str = Header(None),
-                               endpoint_uri: str = Header(None),
-                               filter: str = Header(None)):
+                                  username: str = Header(None),
+                                  password: str = Header(None),
+                                  domain: str = Header(None),
+                                  site_url: str = Header(None),
+                                  endpoint_uri: str = Header(None),
+                                  filter: str = Header(None)):
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
     sharepoint_contextinfo_url = site_url + '/_api/contextinfo'
@@ -434,6 +435,7 @@ def read_agents_services_requests(*,
     else:
         return result
 
+
 @app.get("/batteryitems/agents_services_details")
 def read_agents_sales_requests(*,
                                username: str = Header(None),
@@ -459,7 +461,7 @@ def read_agents_sales_requests(*,
 
     form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
     # We want to extract all the list presents in the site
-    endpoint_uri = "_api/web/lists/getbytitle('CustomerGurrantyRequest')/items" + "?" + filter
+    endpoint_uri = "_api/web/lists/getbytitle('CustomerGurrantyRequest')/items" + "?" + "$select=DeffectedBatterySerial/BatterySerial,ReplaceBatterySerial/BatterySerial,ReplaceOstan/Title0,ReplaceShahr/Title0,*&$expand=DeffectedBatterySerial,ReplaceOstan,ReplaceShahr,ReplaceBatterySerial"
     if result:  # login successfully
         result = auth_object.sharepoint_get_request(endpoint_uri)
         if result.status_code == requests.codes.ok:
