@@ -462,6 +462,7 @@ def read_agents_sales_requests(*,
     form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
     # We want to extract all the list presents in the site
     endpoint_uri = "_api/web/lists/getbytitle('CustomerGurrantyRequest')/items" + "?" + "$select=DeffectedBatterySerial/BatterySerial,ReplaceBatterySerial/BatterySerial,ReplaceOstan/Title0,ReplaceShahr/Title0,*&$expand=DeffectedBatterySerial,ReplaceOstan,ReplaceShahr,ReplaceBatterySerial"
+    endpoint_uri = endpoint_uri + filter
     if result:  # login successfully
         result = auth_object.sharepoint_get_request(endpoint_uri)
         if result.status_code == requests.codes.ok:
