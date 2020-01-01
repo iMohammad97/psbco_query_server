@@ -610,3 +610,34 @@ def update_item(*, username: str = Header(None),
     ActivationCode = ''.join(random.choices(string.digits, k=10))
 
     return {"status": r.status_code, "ActivationCode": ActivationCode, "item": r.json()}
+
+
+@app.get("/batteryitems/provinces_query")
+def read_item_multi_query(*, username: str = Header(None),
+                          password: str = Header(None),
+                          domain: str = Header(None),
+                          site_url: str = Header(None),
+                          endpoint_uri: str = Header(None),
+                          is_check_query: str = Header(None),
+                          filter: str = Header(None)):
+    filter2 = "_api/web/lists(guid'ec9e53c8-e181-448c-add2-2c3a6f981866')/items?$select=ID,Title0"
+
+    auth_object = UserAuthentication(username, password, domain, site_url)
+    result = auth_object.authenticate()
+    return_result = {}
+
+    # We want to extract all the list presents in the site
+    if result:  # login successfully
+        if is_check_query == '1':
+            provinces_result = auth_object.sharepoint_get_request(filter2)
+            if result.status_code == requests.codes.ok:
+                if len(provinces_result.json()['d']['results']) == 0:
+                    return_result = {"status": 404, "error_type": "no such item", "error_result": "no result"}
+                if is_check_query == '1':
+                    json_result2 = provinces_result.json()['d']['results']
+                    return_result = {"status": 200,
+                                     "provinces": json_result2}
+            else:
+                return_result = {"status": result.status_code, "error_type": "no such item",
+                                 "error_result": "no result"}
+    return return_result
