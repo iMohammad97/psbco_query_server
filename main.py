@@ -630,7 +630,7 @@ def read_item_multi_query(*, username: str = Header(None),
     if result:  # login successfully
         if is_check_query == '1':
             provinces_result = auth_object.sharepoint_get_request(filter2)
-            if result.status_code == requests.codes.ok:
+            if provinces_result.status_code == requests.codes.ok:
                 if len(provinces_result.json()['d']['results']) == 0:
                     return_result = {"status": 404, "error_type": "no such item", "error_result": "no result"}
                 if is_check_query == '1':
