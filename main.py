@@ -693,7 +693,7 @@ def read_item_multi_query(*, username: str = Header(None),
         if assign_result.status_code == requests.codes.ok:
             if len(assign_result.json()['d']['results']) == 0:
                 return_result = {"status": 404, "error_type": "no such item", "error_result": "no result"}
-            if is_check_query == '1':
+            else:
                 json_result2 = assign_result.json()['d']['results']
                 return_result = {"status": 200,
                                  "assigns": json_result2}
@@ -701,3 +701,4 @@ def read_item_multi_query(*, username: str = Header(None),
             return_result = {"status": result.status_code, "error_type": "no such item",
                              "error_result": "no result"}
     return return_result
+
