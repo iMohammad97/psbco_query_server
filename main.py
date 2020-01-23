@@ -679,17 +679,23 @@ def read_item_multi_query(*, username: str = Header(None),
                           password: str = Header(None),
                           domain: str = Header(None),
                           site_url: str = Header(None),
-                          is_check_query: str = Header(None),
+                          item_id: str = Header(None),
                           filter: str = Header(None)):
-    filter2 = "_api/web/lists/getbytitle('CustomerAssignaedQTY')/items"
+    filter2 = "_api/web/lists/getbytitle('CustomerAssignaedQTY')/items?$filter=CustomerName/ID eq "
+    filter_CustomerList = "_api/web/lists/getbytitle('CustomerList')/items?$select=CustomerLoginID/ID,*&$expand=CustomerLoginID&$filter=CustomerLoginID/ID eq 105"
 
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
     return_result = {}
 
+    # get user's id in CustomerList
+    customer_result = auth_object.sharepoint_get_request(filter_CustomerList)
+
+    id = customer_result.json()['d']['results'][0]['ID']
+
     # We want to extract all the list presents in the site
     if result:  # login successfully
-        assign_result = auth_object.sharepoint_get_request(filter2 + '?' + filter)
+        assign_result = auth_object.sharepoint_get_request(filter2 + str(id))
         if assign_result.status_code == requests.codes.ok:
             if len(assign_result.json()['d']['results']) == 0:
                 return_result = {"status": 404, "error_type": "no such item", "error_result": "no result"}
@@ -698,7 +704,6 @@ def read_item_multi_query(*, username: str = Header(None),
                 return_result = {"status": 200,
                                  "assigns": json_result2}
         else:
-            return_result = {"status": result.status_code, "error_type": "no such item",
+            return_result = {"status": id, "error_type": "no such item",
                              "error_result": "no result"}
     return return_result
-
