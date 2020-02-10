@@ -707,3 +707,35 @@ def read_item_multi_query(*, username: str = Header(None),
             return_result = {"status": id, "error_type": "no such item",
                              "error_result": "no result"}
     return return_result
+
+
+@app.get("/batteryitems/multi_products_query")
+def read_item_multi_query(*, username: str = Header(None),
+                          password: str = Header(None),
+                          domain: str = Header(None),
+                          site_url: str = Header(None)):
+    filter1 = "_api/web/lists/getbytitle('productList')/items"
+    filter2 = "_api/web/lists/getbytitle('brandList')/items"
+
+    auth_object = UserAuthentication(username, password, domain, site_url)
+    result = auth_object.authenticate()
+    return_result = {}
+
+    # get user's id in CustomerList
+    filter1_result = auth_object.sharepoint_get_request(filter1)
+    filter2_result = auth_object.sharepoint_get_request(filter2)
+
+    # id = customer_result.json()['d']['results'][0]['ID']
+
+    # We want to extract all the list presents in the site
+    if result:  # login successfully
+        if (filter1_result.status_code == requests.codes.ok) and (filter2_result.status_code == requests.codes.ok):
+            json_result1 = filter1_result.json()['d']['results']
+            json_result2 = filter2_result.json()['d']['results']
+            return_result = {"status": 200,
+                             "products": json_result1,
+                             "brands": json_result2}
+        else:
+            return_result = {"status": filter1_result.status_code, "error_type": "no such item",
+                             "error_result": "no result"}
+    return return_result
