@@ -796,6 +796,9 @@ def update_item(*, username: str = Header(None),
     m = []
     parent_id = str(r.json()['d']['ID'])
     # Details
+    product_name_id = product_name_id.split("-")
+    product_brand_id = product_brand_id.split("-")
+    request_qty = request_qty.split("-")
     if r.status_code == 201:
         for i in range(int(count)):
             g = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
@@ -816,9 +819,9 @@ def update_item(*, username: str = Header(None),
 
             payload = {'__metadata': {'type': 'SP.Data.SalesDetailsListItem'},
                        'Parent_ID': parent_id,
-                       'ProductNameId': product_name_id,
-                       'RequestedQTY': request_qty,
-                       'ProductBrandId': product_brand_id,
+                       'ProductNameId': product_name_id[i],
+                       'RequestedQTY': request_qty[i],
+                       'ProductBrandId': product_brand_id[i],
                        }
 
             g = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
