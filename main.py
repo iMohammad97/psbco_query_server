@@ -682,7 +682,7 @@ def read_item_multi_query(*, username: str = Header(None),
                           item_id: str = Header(None),
                           filter: str = Header(None)):
     filter2 = "_api/web/lists/getbytitle('CustomerAssignaedQTY')/items?$filter=CustomerName/ID eq "
-    filter_CustomerList = "_api/web/lists/getbytitle('CustomerList')/items?$select=CustomerLoginID/ID,*&$expand=CustomerLoginID&$filter=CustomerLoginID/ID eq 105"
+    filter_CustomerList = "_api/web/lists/getbytitle('CustomerList')/items?$select=CustomerLoginID/ID,*&$expand=CustomerLoginID&$filter=CustomerLoginID/ID eq " + item_id
 
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
@@ -758,6 +758,17 @@ def update_item(*, username: str = Header(None),
                 count: str = Header(None)):
     sharepoint_contextinfo_url = site_url + '_api/contextinfo'
 
+    filter_CustomerList = "_api/web/lists/getbytitle('CustomerList')/items?$select=CustomerLoginID/ID,*&$expand=CustomerLoginID&$filter=CustomerLoginID/ID eq " + customer_name_id
+
+    auth_object = UserAuthentication(username, password, 'psbco.org', site_url)
+    result = auth_object.authenticate()
+    return_result = {}
+
+    # get user's id in CustomerList
+    customer_result = auth_object.sharepoint_get_request(filter_CustomerList)
+
+    idd = customer_result.json()['d']['results'][0]['ID']
+
     headers = {
         "Accept": "application/json; odata=verbose",
         "Content-Type": "application/json; odata=verbose",
@@ -789,7 +800,7 @@ def update_item(*, username: str = Header(None),
                'ShipOstanId': ship_ostan_id,
                'ShipCityId': ship_city_id,
                'ShipAddress': ship_address,
-               'CustomerNameId': customer_name_id}
+               'CustomerNameId': idd}
 
     r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
 
