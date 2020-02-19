@@ -794,7 +794,6 @@ def update_item(*, username: str = Header(None),
     r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
 
     m = []
-    n = []
     parent_id = str(r.json()['d']['ID'])
     # Details
     product_name_id = product_name_id.split("-")
@@ -826,7 +825,5 @@ def update_item(*, username: str = Header(None),
                        }
 
             g = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
-            # m.append(g.json()['d'])
-            n.append(g.json())
-    return {"status": [r.status_code], "product_name_id": product_name_id, "n": n,
-            "items": {"header": r.json()['d'], "details": m}}
+            m.append(g.json()['d'])
+    return {"status": [r.status_code], "items": {"header": r.json()['d'], "details": m}}
