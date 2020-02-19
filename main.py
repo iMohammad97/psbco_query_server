@@ -739,3 +739,88 @@ def read_item_multi_query(*, username: str = Header(None),
             return_result = {"status": filter1_result.status_code, "error_type": "no such item",
                              "error_result": "no result"}
     return return_result
+
+
+@app.get("/batteryitems/update/new_sales")
+def update_item(*, username: str = Header(None),
+                password: str = Header(None),
+                site_url: str = Header(None),
+                # Header
+                status: str = Header(None),
+                ship_ostan_id: str = Header(None),
+                ship_city_id: str = Header(None),
+                ship_address: str = Header(None),
+                customer_name_id: str = Header(None),
+                # Details
+                product_name_id: str = Header(None),
+                product_brand_id: str = Header(None),
+                request_qty: str = Header(None),
+                count: str = Header(None)):
+    sharepoint_contextinfo_url = site_url + '_api/contextinfo'
+
+    headers = {
+        "Accept": "application/json; odata=verbose",
+        "Content-Type": "application/json; odata=verbose",
+        "odata": "verbose",
+        "X-RequestForceAuthentication": "true"
+    }
+
+    auth = HttpNtlmAuth(username, password)
+
+    # First of all get the context info
+    r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
+    form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
+
+    endpoint_uri = "_api/web/lists/getbytitle('salesheader')/items"
+    api_page = site_url + endpoint_uri
+
+    update_headers = {
+        "Accept": "application/json; odata=verbose",
+        "Content-Type": "application/json; odata=verbose",
+        "odata": "verbose",
+        "X-RequestForceAuthentication": "true",
+        "X-RequestDigest": form_digest_value,
+        # "IF-MATCH": "*",
+        # "X-HTTP-Method": "MERGE"
+    }
+
+    payload = {'__metadata': {'type': 'SP.Data.SalesHeaderListItem'},
+               'Status': 'در انتظار صدور پیش فاکتور',
+               'ShipOstanId': ship_ostan_id,
+               'ShipCityId': ship_city_id,
+               'ShipAddress': ship_address,
+               'CustomerNameId': customer_name_id}
+
+    r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
+
+    m = []
+    parent_id = str(r.json()['d']['ID'])
+    # Details
+    if r.status_code == 201:
+        for i in range(int(count)):
+            g = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
+            form_digest_value = g.json()['d']['GetContextWebInformation']['FormDigestValue']
+
+            endpoint_uri = "_api/web/lists/getbytitle('salesdetails')/items"
+            api_page = site_url + endpoint_uri
+
+            update_headers = {
+                "Accept": "application/json; odata=verbose",
+                "Content-Type": "application/json; odata=verbose",
+                "odata": "verbose",
+                "X-RequestForceAuthentication": "true",
+                "X-RequestDigest": form_digest_value,
+                # "IF-MATCH": "*",
+                # "X-HTTP-Method": "MERGE"
+            }
+
+            payload = {'__metadata': {'type': 'SP.Data.SalesDetailsListItem'},
+                       'Parent_ID': parent_id,
+                       'ProductNameId': product_name_id,
+                       'RequestedQTY': request_qty,
+                       'ProductBrandId': product_brand_id,
+                       }
+
+            g = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
+            m.append(g.json()['d'])
+    return {"status": [r.status_code], "items": {"header": r.json()['d'], "details": m}}
