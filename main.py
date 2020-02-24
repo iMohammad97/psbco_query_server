@@ -207,7 +207,7 @@ def update_item(*, username: str = Header(None),
         # "X-HTTP-Method": "MERGE"
     }
 
-    payload = {'__metadata': {'type': 'SP.Data.BatteryListTestListItem'},
+    payload = {'__metadata': {'type': 'SP.Data.BatteryListListItem'},
                'BatterySerial': battery_serial,
                'PackingDate': packing_date,
                'GurrantyEndDate': gurranty_end_date,
@@ -337,7 +337,7 @@ def read_agents_sales_requests(*,
         # "X-HTTP-Method": "MERGE"
     }
 
-    payload = {'__metadata': {'type': 'SP.Data.BatteryListTestListItem'},
+    payload = {'__metadata': {'type': 'SP.Data.BatteryListListItem'},
                'BatterySerial': battery_serial,
                'PackingDate': packing_date,
                'GurrantyEndDate': gurranty_end_date,
