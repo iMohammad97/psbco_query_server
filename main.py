@@ -568,6 +568,17 @@ def update_item(*, username: str = Header(None),
                 replaced_by_username_id: str = Header(None)):
     sharepoint_contextinfo_url = site_url + '_api/contextinfo'
 
+    filter_CustomerList = "_api/web/lists/getbytitle('CustomerList')/items?$select=CustomerLoginID/ID,*&$expand=CustomerLoginID&$filter=CustomerLoginID/ID eq " + replace_by_id
+
+    auth_object = UserAuthentication(username, password, 'psbco.org', site_url)
+    result = auth_object.authenticate()
+    return_result = {}
+
+    # get user's id in CustomerList
+    customer_result = auth_object.sharepoint_get_request(filter_CustomerList)
+
+    idd = customer_result.json()['d']['results'][0]['ID']
+
     headers = {
         "Accept": "application/json; odata=verbose",
         "Content-Type": "application/json; odata=verbose",
@@ -599,7 +610,7 @@ def update_item(*, username: str = Header(None),
                'ReplaceReasonId': replace_reason_id,
                'SalesDate': sales_date,
                'ReplaceDate': replace_date,
-               'ReplaceById': replace_by_id,
+               'ReplaceById': idd,
                'IndicatorStatus': indicator_status,
                'OData__x0031_stVoltage': first_voltage,
                'OData__x0032_ndVoltage': second_voltage,
