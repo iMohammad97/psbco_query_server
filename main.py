@@ -245,21 +245,20 @@ def read_agents_sales_requests(*,
         if mode is not None:
             if mode == '1':
                 filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'اتمام حمل\')"
-            else if mode == '2':
+            elif mode == '2':
                 filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در صف تولید\')"
-            else if mode == '3':
+            elif mode == '3':
                 filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار صدور پیش فاکتور\')"
-            else if mode == '4':
+            elif mode == '4':
                 filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تعیین تاریخ حمل\')"
-            else if mode == '5':
+            elif mode == '5':
                 filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید مالی\')"
-            else if mode == '6':
+            elif mode == '6':
                 filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید پرداخت\')"
-            else if mode == '7':
+            elif mode == '7':
                 filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'آماده حمل\')"
-            else if mode == '8':
+            elif mode == '8':
                 filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید پیش فاکتور\')"
-
 
     # First of all get the context info
     r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
