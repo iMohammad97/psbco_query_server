@@ -225,7 +225,8 @@ def read_agents_sales_requests(*,
                                password: str = Header(None),
                                domain: str = Header(None),
                                site_url: str = Header(None),
-                               endpoint_uri: str = Header(None),
+                               mode: str = Header(None),
+                               item_Id: str = Header(None),
                                filter: str = Header(None)):
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
@@ -239,6 +240,26 @@ def read_agents_sales_requests(*,
         "odata": "verbose",
         "X-RequestForceAuthentication": "true"
     }
+
+    if filter is not None:
+        if mode is not None:
+            if mode == '1':
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'اتمام حمل\')"
+            else if mode == '2':
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در صف تولید\')"
+            else if mode == '3':
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار صدور پیش فاکتور\')"
+            else if mode == '4':
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تعیین تاریخ حمل\')"
+            else if mode == '5':
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید مالی\')"
+            else if mode == '6':
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید پرداخت\')"
+            else if mode == '7':
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'آماده حمل\')"
+            else if mode == '8':
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید پیش فاکتور\')"
+
 
     # First of all get the context info
     r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
