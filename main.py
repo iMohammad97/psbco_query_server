@@ -414,7 +414,8 @@ def read_agents_services_requests(*,
                                   password: str = Header(None),
                                   domain: str = Header(None),
                                   site_url: str = Header(None),
-                                  endpoint_uri: str = Header(None),
+                                  mode: str = Header(None),
+                                  item_Id: str = Header(None),
                                   filter: str = Header(None)):
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
@@ -428,6 +429,24 @@ def read_agents_services_requests(*,
         "odata": "verbose",
         "X-RequestForceAuthentication": "true"
     }
+
+    if filter is not None:
+        if mode is not None:
+            if mode == '1':
+                filter = "$select=ReplacedBYUserName/ID,ReplacedBYUserName/Title,*&$expand=ReplacedBYUserName&$filter=(ReplacedBYUserName/ID eq " + item_Id + ")and(Status eq \'تایید\')"
+            elif mode == '2':
+                filter = "$select=ReplacedBYUserName/ID,ReplacedBYUserName/Title,*&$expand=ReplacedBYUserName&$filter=(ReplacedBYUserName/ID eq " + item_Id + ")and(Status eq \'تایید ارفاقی\')"
+            elif mode == '3':
+                filter = "$select=ReplacedBYUserName/ID,ReplacedBYUserName/Title,*&$expand=ReplacedBYUserName&$filter=(ReplacedBYUserName/ID eq " + item_Id + ")and(Status eq \'تایید شده\')"
+            elif mode == '4':
+                filter = "$select=ReplacedBYUserName/ID,ReplacedBYUserName/Title,*&$expand=ReplacedBYUserName&$filter=(ReplacedBYUserName/ID eq " + item_Id + ")and(Status eq \'در انتظار ارسال به کارخانه\')"
+            elif mode == '5':
+                filter = "$select=ReplacedBYUserName/ID,ReplacedBYUserName/Title,*&$expand=ReplacedBYUserName&$filter=(ReplacedBYUserName/ID eq " + item_Id + ")and(Status eq \'در حال بررسی\')"
+            elif mode == '6':
+                filter = "$select=ReplacedBYUserName/ID,ReplacedBYUserName/Title,*&$expand=ReplacedBYUserName&$filter=(ReplacedBYUserName/ID eq " + item_Id + ")and(Status eq \'در راه کارخانه\')"
+            elif mode == '7':
+                filter = "$select=ReplacedBYUserName/ID,ReplacedBYUserName/Title,*&$expand=ReplacedBYUserName&$filter=(ReplacedBYUserName/ID eq " + item_Id + ")and(Status eq \'نیاز به شارژ\')"
+
 
     # First of all get the context info
     r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
