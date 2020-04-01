@@ -259,6 +259,8 @@ def read_agents_sales_requests(*,
                 filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'آماده حمل\')"
             elif mode == '8':
                 filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید پیش فاکتور\')"
+            elif mode == '0':
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=CustomerID/ID eq " + item_Id
 
     # First of all get the context info
     r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
@@ -446,7 +448,8 @@ def read_agents_services_requests(*,
                 filter = "$select=ReplacedBYUserName/ID,ReplacedBYUserName/Title,*&$expand=ReplacedBYUserName&$filter=(ReplacedBYUserName/ID eq " + item_Id + ")and(Status eq \'در راه کارخانه\')"
             elif mode == '7':
                 filter = "$select=ReplacedBYUserName/ID,ReplacedBYUserName/Title,*&$expand=ReplacedBYUserName&$filter=(ReplacedBYUserName/ID eq " + item_Id + ")and(Status eq \'نیاز به شارژ\')"
-
+            elif mode == '0':
+                filter = "$select=ReplacedBYUserName/ID,ReplacedBYUserName/Title,*&$expand=ReplacedBYUserName&$filter=ReplacedBYUserName/ID eq " + item_Id
 
     # First of all get the context info
     r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
