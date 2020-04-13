@@ -244,23 +244,23 @@ def read_agents_sales_requests(*,
     if filter is not None:
         if mode is not None:
             if mode == '1':
-                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'اتمام حمل\')"
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$orderby=Modified desc&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'اتمام حمل\')"
             elif mode == '2':
-                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در صف تولید\')"
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$orderby=Modified desc&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در صف تولید\')"
             elif mode == '3':
-                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار صدور پیش فاکتور\')"
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$orderby=Modified desc&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار صدور پیش فاکتور\')"
             elif mode == '4':
-                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تعیین تاریخ حمل\')"
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$orderby=Modified desc&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تعیین تاریخ حمل\')"
             elif mode == '5':
-                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید مالی\')"
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$orderby=Modified desc&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید مالی\')"
             elif mode == '6':
-                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید پرداخت\')"
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$orderby=Modified desc&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید پرداخت\')"
             elif mode == '7':
-                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'آماده حمل\')"
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$orderby=Modified desc&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'آماده حمل\')"
             elif mode == '8':
-                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید پیش فاکتور\')"
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$orderby=Modified desc&$filter=(CustomerID/ID eq " + item_Id + ")and(Status eq \'در انتظار تایید پیش فاکتور\')"
             elif mode == '0':
-                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$filter=CustomerID/ID eq " + item_Id
+                filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$orderby=Modified desc&$filter=CustomerID/ID eq " + item_Id
 
     # First of all get the context info
     r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
@@ -276,13 +276,13 @@ def read_agents_sales_requests(*,
                 return {"status": 404, "error_type": "no such item", "error_result": "no result"}
             if filter == None:
                 json_result = result.json()['d']['results']
-                return {"status": 200, "item": json_result}
+                return {"status": 200, "count": len(result.json()['d']['results']), "item": json_result}
             else:
                 result = auth_object.sharepoint_get_request(endpoint_uri + "?" + filter)
                 if len(result.json()['d']['results']) == 0:
                     return {"status": 404, "error_type": "no such item", "error_result": "no result"}
                 json_result = result.json()['d']['results']
-                return {"status": 200, "item": json_result}
+                return {"status": 200, "count": len(result.json()['d']['results']) , "item": json_result}
 
         return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
     else:
@@ -298,6 +298,7 @@ def read_agents_usernames(*,
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
     sharepoint_contextinfo_url = site_url + '/_api/contextinfo'
+
 
     auth = HttpNtlmAuth(username, password)
 
@@ -319,7 +320,10 @@ def read_agents_usernames(*,
         result = auth_object.sharepoint_get_request(endpoint_uri)
         if result.status_code == requests.codes.ok:
             json_result = result.json()['d']
-            return {"status": 200, "item": json_result}
+            filter_CustomerList = "_api/web/lists/getbytitle('CustomerList')/items?$select=CustomerLoginID/ID,*&$expand=CustomerLoginID&$filter=CustomerLoginID/ID eq " + str(json_result['Id'])
+            resultName = auth_object.sharepoint_get_request(filter_CustomerList)
+            name_json = resultName.json()['d']['results'][0]['CustomerName']
+            return {"status": 200, "item": json_result, "cliname": name_json}
         return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
     else:
         return {"status": "fail", "result": result}
