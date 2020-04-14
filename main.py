@@ -322,7 +322,11 @@ def read_agents_usernames(*,
             json_result = result.json()['d']
             filter_CustomerList = "_api/web/lists/getbytitle('CustomerList')/items?$select=CustomerLoginID/ID,*&$expand=CustomerLoginID&$filter=CustomerLoginID/ID eq " + str(json_result['Id'])
             resultName = auth_object.sharepoint_get_request(filter_CustomerList)
-            name_json = resultName.json()['d']['results'][0]['CustomerName']
+            name_json = ''
+            if len(resultName.json()['d']['results']) == 0:
+                name_json = 'nullclient'
+            else:
+                name_json = resultName.json()['d']['results'][0]['CustomerName']
             return {"status": 200, "item": json_result, "cliname": name_json}
         return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
     else:
