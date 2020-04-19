@@ -100,6 +100,7 @@ def find_batteries(*, username: str = Header(None),
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
 
+    endpoint_uri += "?$select=ActivatorTelId,*&$filter=ActivatorTelId eq " + "'" + phone_number + "'"
     items = []
     # We want to extract all the list presents in the site
     if result:  # login successfully
@@ -107,10 +108,10 @@ def find_batteries(*, username: str = Header(None),
         if result.status_code == requests.codes.ok:
             json_result = result.json()['d']['results']
             if is_check_query == '1':
-                for element in json_result:
-                    if element['ActivatorTelId'] == phone_number:
-                        items.append(element)
-                return {"status": 200, "item": items}
+                # for element in json_result:
+                #     # if element['ActivatorTelId'] == phone_number:
+                #     items.append(element)
+                return {"status": 200, "item": json_result}
             return json_result
         else:
             return {"status": "error on items", "error_type": "no items in list", "error_result": result}
