@@ -283,7 +283,7 @@ def read_agents_sales_requests(*,
                 if len(result.json()['d']['results']) == 0:
                     return {"status": 404, "error_type": "no such item", "error_result": "no result"}
                 json_result = result.json()['d']['results']
-                return {"status": 200, "count": len(result.json()['d']['results']) , "item": json_result}
+                return {"status": 200, "count": len(result.json()['d']['results']), "item": json_result}
 
         return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
     else:
@@ -299,7 +299,6 @@ def read_agents_usernames(*,
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
     sharepoint_contextinfo_url = site_url + '/_api/contextinfo'
-
 
     auth = HttpNtlmAuth(username, password)
 
@@ -321,7 +320,8 @@ def read_agents_usernames(*,
         result = auth_object.sharepoint_get_request(endpoint_uri)
         if result.status_code == requests.codes.ok:
             json_result = result.json()['d']
-            filter_CustomerList = "_api/web/lists/getbytitle('CustomerList')/items?$select=CustomerLoginID/ID,*&$expand=CustomerLoginID&$filter=CustomerLoginID/ID eq " + str(json_result['Id'])
+            filter_CustomerList = "_api/web/lists/getbytitle('CustomerList')/items?$select=CustomerLoginID/ID,*&$expand=CustomerLoginID&$filter=CustomerLoginID/ID eq " + str(
+                json_result['Id'])
             resultName = auth_object.sharepoint_get_request(filter_CustomerList)
             name_json = ''
             if len(resultName.json()['d']['results']) == 0:
@@ -902,3 +902,31 @@ def update_item(*, username: str = Header(None),
             g = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
             m.append(g.json()['d'])
     return {"status": [r.status_code], "items": {"header": r.json()['d'], "details": m}}
+
+
+@app.get("/batteryitems/access_query")
+def read_item_multi_query(*, username: str = Header(None),
+                          password: str = Header(None),
+                          domain: str = Header(None),
+                          site_url: str = Header(None),
+                          phone: str = Header(None)):
+    filter2 = "_api/web/lists/getbytitle('AppAccessList')/items?$filter=MobileNumber eq '" + phone + "'"
+
+    auth_object = UserAuthentication(username, password, domain, site_url)
+    result = auth_object.authenticate()
+    return_result = {}
+
+    # We want to extract all the list presents in the site
+    if result:  # login successfully
+        access_result = auth_object.sharepoint_get_request(filter2)
+        if access_result.status_code == requests.codes.ok:
+            if len(access_result.json()['d']['results']) == 0:
+                return_result = {"status": 404, "error_type": "no such item", "error_result": "no result"}
+            else:
+                json_result2 = access_result.json()['d']['results']
+                return_result = {"status": 200,
+                                 "assigns": json_result2}
+        else:
+            return_result = {"status": access_result.status_code, "error_type": "server no such item",
+                             "error_result": "no result"}
+    return return_result
