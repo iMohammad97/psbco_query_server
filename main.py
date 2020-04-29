@@ -815,6 +815,7 @@ def update_item(*, username: str = Header(None),
                 ship_city_id: str = Header(None),
                 ship_address: str = Header(None),
                 customer_name_id: str = Header(None),
+                assign_id: str = Header(None),
                 # Details
                 product_name_id: str = Header(None),
                 product_brand_id: str = Header(None),
@@ -864,6 +865,7 @@ def update_item(*, username: str = Header(None),
                'ShipOstanId': ship_ostan_id,
                'ShipCityId': ship_city_id,
                'ShipAddress': ship_address,
+               'AssignedListID': assign_id,
                'CustomerNameId': idd}
 
     r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
