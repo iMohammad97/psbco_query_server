@@ -1,4 +1,4 @@
-from wefastapi import FastAPI, Header
+from fastapi import FastAPI, Header
 import requests
 from requests_ntlm import HttpNtlmAuth
 import urllib.parse
