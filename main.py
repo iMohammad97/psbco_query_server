@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Header
+from wefastapi import FastAPI, Header
 import requests
 from requests_ntlm import HttpNtlmAuth
 import urllib.parse
@@ -932,3 +932,26 @@ def read_item_multi_query(*, username: str = Header(None),
             return_result = {"status": access_result.status_code, "error_type": "server no such item",
                              "error_result": "no result"}
     return return_result
+
+
+@app.get("/batteryitems/app_access_list")
+def app_access_list(*, username: str = Header(None),
+                    password: str = Header(None),
+                    domain: str = Header(None),
+                    site_url: str = Header(None),
+                    endpoint_uri: str = Header(None),
+                    phone_number: str = Header(None)):
+    auth_object = UserAuthentication(username, password, domain, site_url)
+    result = auth_object.authenticate()
+
+    endpoint_uri += "?$select=MobileNumber,*&$filter=MobileNumber eq " + "'" + phone_number + "'"
+    # We want to extract all the list presents in the site
+    if result:  # login successfully
+        result = auth_object.sharepoint_get_request(endpoint_uri)
+        if result.status_code == requests.codes.ok:
+            json_result = result.json()['d']['results']
+            return {"status": 200, "item": json_result}
+        else:
+            return {"status": "error on items", "error_type": "failed on request processing", "error_result": result}
+    else:  # login unsuccessfully
+        return {"status": "error on auth", "error_type": "failed auth", "error_result": result}
