@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Header
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 import requests
 from requests_ntlm import HttpNtlmAuth
 import urllib.parse
