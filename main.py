@@ -1,8 +1,10 @@
 from fastapi import FastAPI, Header
+from fastapi.middleware.cors import CORSMiddleware
 import requests
 from requests_ntlm import HttpNtlmAuth
 import urllib.parse
 import random, string
+
 
 
 # Creating a class for Authentication
@@ -51,6 +53,19 @@ class UserAuthentication:
 
 
 app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
