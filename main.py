@@ -1,10 +1,12 @@
-from fastapi import FastAPI, Header
-from starlette.middleware.cors import CORSMiddleware
-import requests
-from requests_ntlm import HttpNtlmAuth
+import json
+import random
+import string
 import urllib.parse
-import random, string
 
+import requests
+from fastapi import FastAPI, Header
+from requests_ntlm import HttpNtlmAuth
+from starlette.middleware.cors import CORSMiddleware
 
 
 # Creating a class for Authentication
@@ -71,6 +73,27 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+@app.get("/v1/sendSMS/")
+def update_item(*, template: str = Header(None),
+                param1: str = Header(None),
+                receptor: str = Header(None)):
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "apikey": "dOt7P76LO65JfohHNf7oKDv++WWjAHOGAPLRikV7DL8"
+    }
+
+    req_url = "https://api.smsapp.ir/v2/send/verify"
+    payload = {'type': 1, 'template': template, 'param1': param1, 'receptor': receptor}
+    # payload = "type=1¶m1=&receptor=" + str(receptor) + "&template=" + str(template)
+
+    r = requests.post(req_url, headers=headers, data=json.dumps(payload))
+    req_response_json = r.json()
+    print(req_response_json)
+
+    return {"status": r.status_code, "response": req_response_json}
 
 
 @app.get("/batteryitems/")
