@@ -166,8 +166,13 @@ def update_item(*, username: str = Header(None),
                 is_active: str = Header(None),
                 activator_tel: str = Header(None),
                 activation_date: str = Header(None),
+                activation_history: str = Header(None),
+                activation_code: str = Header(None),
                 metadata_type: str = Header(None)):
+    print("INSIDEEEEEEE")
     sharepoint_contextinfo_url = site_url + '_api/contextinfo'
+    auth_object = UserAuthentication(username, password, 'psbco.org', site_url)
+    result = auth_object.authenticate()
 
     headers = {
         "Accept": "application/json; odata=verbose",
@@ -175,12 +180,18 @@ def update_item(*, username: str = Header(None),
         "odata": "verbose",
         "X-RequestForceAuthentication": "true"
     }
-
+    print("username, password", username, password)
     auth = HttpNtlmAuth(username, password)
+    print("After auth", auth)
+    print("sharepoint_contextinfo_url", sharepoint_contextinfo_url)
+
 
     # First of all get the context info
     r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
+    print("request: ", r.json())
     form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
+
+    print("form_digest_value: ", form_digest_value)
 
     api_page = site_url + endpoint_uri + "GetItemById(%s)" % item_id
     update_headers = {
@@ -200,6 +211,7 @@ def update_item(*, username: str = Header(None),
                "ActivatorTelId": activator_tel,
                "ActivationType": "اپلیکیشن",
                "ActivationCode": ActivationCode,
+               "ActivationHistory": activation_history,
                "__metadata": {"type": metadata_type}
                }
 
