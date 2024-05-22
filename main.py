@@ -955,18 +955,23 @@ def read_item_multi_query(*, username: str = Header(None),
                           phone: str = Header(None)):
     filter2 = "_api/web/lists/getbytitle('AppAccessList')/items?$filter=MobileNumber eq '" + phone + "'"
 
+    print("0_ entered request filter2:", filter2)
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
     return_result = {}
+    print("1_ return_result:", return_result)
 
     # We want to extract all the list presents in the site
     if result:  # login successfully
         access_result = auth_object.sharepoint_get_request(filter2)
+        print("2_ access_result:", access_result)
         if access_result.status_code == requests.codes.ok:
             if len(access_result.json()['d']['results']) == 0:
+                print("3_ access_result.json():", access_result.json())
                 return_result = {"status": 404, "error_type": "no such item", "error_result": "no result"}
             else:
                 json_result2 = access_result.json()['d']['results']
+                print("4_ json_result2.json():", json_result2.json())
                 return_result = {"status": 200,
                                  "assigns": json_result2}
         else:
