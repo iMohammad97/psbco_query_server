@@ -947,7 +947,7 @@ def update_item(*, username: str = Header(None),
     return {"status": [r.status_code], "items": {"header": r.json()['d'], "details": m}}
 
 
-@app.get("/batteryitems/access_query")
+@app.get("/batteryitems/access_query/")
 def read_item_multi_query(*, username: str = Header(None),
                           password: str = Header(None),
                           domain: str = Header(None),
@@ -971,7 +971,7 @@ def read_item_multi_query(*, username: str = Header(None),
                 return_result = {"status": 404, "error_type": "no such item", "error_result": "no result"}
             else:
                 json_result2 = access_result.json()['d']['results']
-                print("4_ json_result2.json():", json_result2.json())
+                print("4_ json_result2.json():", json_result2)
                 return_result = {"status": 200,
                                  "assigns": json_result2}
         else:
