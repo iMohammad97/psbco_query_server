@@ -367,7 +367,7 @@ def read_agents_usernames(*,
                     name_json = 'nullclient'
                 else:
                     name_json = resultName.json()['d']['results'][0]['CustomerName']
-                return {"status": 200, "item": json_result, "cliname": name_json}
+                return {"status": 200, "item": json_result, "cliname": name_json, "fullitem": resultName.json()['d']['results'][0]}
             return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
         else:
             return {"status": "fail", "result": result}
