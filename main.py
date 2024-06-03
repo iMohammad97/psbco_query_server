@@ -105,8 +105,6 @@ def read_agents_mid_list(*,
 
     domain = "psbco.org"
     site_url = "http://sp.psbco.org/"
-    item_id = ""
-    filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$orderby=Modified desc&$filter=CustomerID/ID eq " + item_id
 
     auth_object = UserAuthentication(username, password, domain, site_url)
     result = auth_object.authenticate()
@@ -127,7 +125,7 @@ def read_agents_mid_list(*,
     form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
 
     # We want to extract all the list presents in the site
-    endpoint_uri = "_api/web/lists/getbytitle('CustomerMidList')/items"
+    endpoint_uri = "_api/web/lists/getbytitle('CustomerSalesMidList')/items"
     if result:  # login successfully
         result = auth_object.sharepoint_get_request(endpoint_uri)
         if result.status_code == requests.codes.ok:
