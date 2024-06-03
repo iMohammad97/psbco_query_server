@@ -98,6 +98,49 @@ def update_item(*, template: str = Header(None),
     return {"status": r.status_code, "response": req_response_json}
 
 
+@app.get("/customermidlist")
+def read_agents_mid_list(*,
+                         username: str = Header(None),
+                         password: str = Header(None)):
+
+    domain = "psbco.org"
+    site_url = "http://sp.psbco.org/"
+    item_id = ""
+    filter = "$select=CustomerName/CustomerName,CustomerID/Name,*&$expand=CustomerName,CustomerID&$orderby=Modified desc&$filter=CustomerID/ID eq " + item_id
+
+    auth_object = UserAuthentication(username, password, domain, site_url)
+    result = auth_object.authenticate()
+    sharepoint_contextinfo_url = site_url + '/_api/contextinfo'
+
+    auth = HttpNtlmAuth(username, password)
+
+    headers = {
+        "Accept": "application/json; odata=verbose",
+        "Content-Type": "application/json; odata=verbose",
+        "odata": "verbose",
+        "X-RequestForceAuthentication": "true"
+    }
+
+    # First of all get the context info
+    r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
+
+    form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
+
+    # We want to extract all the list presents in the site
+    endpoint_uri = "_api/web/lists/getbytitle('CustomerMidList')/items"
+    if result:  # login successfully
+        result = auth_object.sharepoint_get_request(endpoint_uri)
+        if result.status_code == requests.codes.ok:
+            if len(result.json()['d']['results']) == 0:
+                return {"status": 404, "error_type": "no such item", "error_result": "no result"}
+            else:
+                json_result = result.json()['d']['results']
+                return {"status": 200, "count": len(result.json()['d']['results']), "item": json_result}
+        return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
+    else:
+        return result
+
+
 @app.get("/batteryitems/")
 def read_item(*, username: str = Header(None),
               password: str = Header(None),
@@ -367,7 +410,8 @@ def read_agents_usernames(*,
                     name_json = 'nullclient'
                 else:
                     name_json = resultName.json()['d']['results'][0]['CustomerName']
-                return {"status": 200, "item": json_result, "cliname": name_json, "fullitem": resultName.json()['d']['results'][0]}
+                return {"status": 200, "item": json_result, "cliname": name_json,
+                        "fullitem": resultName.json()['d']['results'][0]}
             return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
         else:
             return {"status": "fail", "result": result}
