@@ -168,7 +168,7 @@ def read_agents_mid_services_list(*,
     form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
 
     # We want to extract all the list presents in the site
-    endpoint_uri = "_api/web/lists/getbytitle('CustomerServicesMidList')/items" + filter
+    endpoint_uri = "_api/web/lists/getbytitle('CustomerReplaceMidList')/items" + filter
     if result:  # login successfully
         result = auth_object.sharepoint_get_request(endpoint_uri)
         if result.status_code == requests.codes.ok:
