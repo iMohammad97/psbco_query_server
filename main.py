@@ -1035,7 +1035,8 @@ def update_item(*, username: str = Header(None),
                'ShipCityId': ship_city_id,
                'ShipAddress': ship_address,
                'AssignedListIDId': assign_id,
-               'CustomerNameId': idd}
+               'CustomerNameId': idd,
+               'DeliverTo': deliver_to_customer, }
 
     r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
 
@@ -1068,7 +1069,6 @@ def update_item(*, username: str = Header(None),
                        'ProductNameId': int(product_name_id[i]),
                        'RequestedQTY': int(request_qty[i]),
                        'ProductBrandId': int(product_brand_id[i]),
-                       'DeliverTo': deliver_to_customer,
                        }
 
             g = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
