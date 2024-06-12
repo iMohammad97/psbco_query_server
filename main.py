@@ -72,12 +72,12 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/pwa/")
 def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/v1/sendSMS/")
+@app.get("/pwa/v1/sendSMS/")
 def update_item(*, template: str = Header(None),
                 param1: str = Header(None),
                 receptor: str = Header(None)):
@@ -98,7 +98,7 @@ def update_item(*, template: str = Header(None),
     return {"status": r.status_code, "response": req_response_json}
 
 
-@app.get("/customerlist/subset")
+@app.get("/pwa/customerlist/subset")
 def read_agents_subsets_list(*,
                              username: str = Header(None),
                              password: str = Header(None),
@@ -139,7 +139,7 @@ def read_agents_subsets_list(*,
         return result
 
 
-@app.get("/customermidlist/sales")
+@app.get("/pwa/customermidlist/sales")
 def read_agents_mid_sales_list(*,
                                username: str = Header(None),
                                password: str = Header(None),
@@ -180,7 +180,7 @@ def read_agents_mid_sales_list(*,
         return result
 
 
-@app.get("/customermidlist/services")
+@app.get("/pwa/customermidlist/services")
 def read_agents_mid_services_list(*,
                                   username: str = Header(None),
                                   password: str = Header(None),
@@ -222,7 +222,7 @@ def read_agents_mid_services_list(*,
         return result
 
 
-@app.get("/batteryitems/")
+@app.get("/pwa/batteryitems/")
 def read_item(*, username: str = Header(None),
               password: str = Header(None),
               domain: str = Header(None),
@@ -253,7 +253,7 @@ def read_item(*, username: str = Header(None),
         return result.json
 
 
-@app.get("/batteryitems/mybatteries")
+@app.get("/pwa/batteryitems/mybatteries")
 def find_batteries(*, username: str = Header(None),
                    password: str = Header(None),
                    domain: str = Header(None),
@@ -283,7 +283,7 @@ def find_batteries(*, username: str = Header(None),
         return {"status": "error on auth", "error_type": "failed auth", "error_result": result}
 
 
-@app.get("/batteryitems/update/")
+@app.get("/pwa/batteryitems/update/")
 def update_item(*, username: str = Header(None),
                 password: str = Header(None),
                 site_url: str = Header(None),
@@ -334,7 +334,7 @@ def update_item(*, username: str = Header(None),
     return {"status": r.status_code}
 
 
-@app.get("/batteryitems/update/new_battery")
+@app.get("/pwa/batteryitems/update/new_battery")
 def update_item(*, username: str = Header(None),
                 password: str = Header(None),
                 site_url: str = Header(None),
@@ -381,7 +381,7 @@ def update_item(*, username: str = Header(None),
     return {"status": r.status_code, "ActivationCode": ActivationCode, "item": r.json()['d']}
 
 
-@app.get("/batteryitems/agents_sales")
+@app.get("/pwa/batteryitems/agents_sales")
 def read_agents_sales_requests(*,
                                username: str = Header(None),
                                password: str = Header(None),
@@ -451,7 +451,7 @@ def read_agents_sales_requests(*,
         return result
 
 
-@app.get("/batteryitems/agents_check")
+@app.get("/pwa/batteryitems/agents_check")
 def read_agents_usernames(*,
                           username: str = Header(None),
                           password: str = Header(None),
@@ -500,7 +500,7 @@ def read_agents_usernames(*,
         return {"status": "fail", "result": "version_error"}
 
 
-@app.get("/batteryitems/agents_sales_request")
+@app.get("/pwa/batteryitems/agents_sales_request")
 def read_agents_sales_requests(*,
                                username: str = Header(None),
                                password: str = Header(None),
@@ -546,7 +546,7 @@ def read_agents_sales_requests(*,
     return {"status": r.status_code, "ActivationCode": ActivationCode, "item": r.json()['d']}
 
 
-@app.get("/batteryitems/agents_sales_details")
+@app.get("/pwa/batteryitems/agents_sales_details")
 def read_agents_sales_requests(*,
                                username: str = Header(None),
                                password: str = Header(None),
@@ -585,7 +585,7 @@ def read_agents_sales_requests(*,
         return result
 
 
-@app.get("/batteryitems/agents_services")
+@app.get("/pwa/batteryitems/agents_services")
 def read_agents_services_requests(*,
                                   username: str = Header(None),
                                   password: str = Header(None),
@@ -653,7 +653,7 @@ def read_agents_services_requests(*,
         return result
 
 
-@app.get("/batteryitems/agents_services_details")
+@app.get("/pwa/batteryitems/agents_services_details")
 def read_agents_sales_requests(*,
                                username: str = Header(None),
                                password: str = Header(None),
@@ -693,7 +693,7 @@ def read_agents_sales_requests(*,
         return result
 
 
-@app.get("/batteryitems/multi_query")
+@app.get("/pwa/batteryitems/multi_query")
 def read_item_multi_query(*, username: str = Header(None),
                           password: str = Header(None),
                           domain: str = Header(None),
@@ -742,7 +742,7 @@ def read_item_multi_query(*, username: str = Header(None),
     return return_result
 
 
-@app.get("/batteryitems/city_query")
+@app.get("/pwa/batteryitems/city_query")
 def read_item_multi_query(*, username: str = Header(None),
                           password: str = Header(None),
                           domain: str = Header(None),
@@ -766,7 +766,7 @@ def read_item_multi_query(*, username: str = Header(None),
     return return_result
 
 
-@app.get("/batteryitems/update/new_service")
+@app.get("/pwa/batteryitems/update/new_service")
 def update_item(*, username: str = Header(None),
                 password: str = Header(None),
                 site_url: str = Header(None),
@@ -844,7 +844,7 @@ def update_item(*, username: str = Header(None),
     return {"status": r.status_code, "ActivationCode": ActivationCode, "item": r.json()}
 
 
-@app.get("/batteryitems/provinces_query")
+@app.get("/pwa/batteryitems/provinces_query")
 def read_item_multi_query(*, username: str = Header(None),
                           password: str = Header(None),
                           domain: str = Header(None),
@@ -875,7 +875,7 @@ def read_item_multi_query(*, username: str = Header(None),
     return return_result
 
 
-@app.get("/batteryitems/provinces_query")
+@app.get("/pwa/batteryitems/provinces_query")
 def read_item_multi_query(*, username: str = Header(None),
                           password: str = Header(None),
                           domain: str = Header(None),
@@ -906,7 +906,7 @@ def read_item_multi_query(*, username: str = Header(None),
     return return_result
 
 
-@app.get("/batteryitems/assign_query")
+@app.get("/pwa/batteryitems/assign_query")
 def read_item_multi_query(*, username: str = Header(None),
                           password: str = Header(None),
                           domain: str = Header(None),
@@ -941,7 +941,7 @@ def read_item_multi_query(*, username: str = Header(None),
     return return_result
 
 
-@app.get("/batteryitems/multi_products_query")
+@app.get("/pwa/batteryitems/multi_products_query")
 def read_item_multi_query(*, username: str = Header(None),
                           password: str = Header(None),
                           domain: str = Header(None),
@@ -973,7 +973,7 @@ def read_item_multi_query(*, username: str = Header(None),
     return return_result
 
 
-@app.get("/batteryitems/update/new_sales")
+@app.get("/pwa/batteryitems/update/new_sales")
 def update_item(*, username: str = Header(None),
                 password: str = Header(None),
                 site_url: str = Header(None),
@@ -1076,7 +1076,7 @@ def update_item(*, username: str = Header(None),
     return {"status": [r.status_code], "items": {"header": r.json()['d'], "details": m}}
 
 
-@app.get("/batteryitems/access_query/")
+@app.get("/pwa/batteryitems/access_query/")
 def read_item_multi_query(*, username: str = Header(None),
                           password: str = Header(None),
                           domain: str = Header(None),
@@ -1104,7 +1104,7 @@ def read_item_multi_query(*, username: str = Header(None),
     return return_result
 
 
-@app.get("/batteryitems/app_access_list/")
+@app.get("/pwa/batteryitems/app_access_list/")
 def app_access_list(*, username: str = Header(None),
                     password: str = Header(None),
                     domain: str = Header(None),
