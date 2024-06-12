@@ -1029,15 +1029,6 @@ def update_item(*, username: str = Header(None),
         # "X-HTTP-Method": "MERGE"
     }
 
-    print({'__metadata': {'type': 'SP.Data.SalesHeaderListItem'},
-           'Status': 'در انتظار صدور پیش فاکتور',
-           'ShipOstanId': ship_ostan_id,
-           'ShipCityId': ship_city_id,
-           'ShipAddress': ship_address,
-           'AssignedListIDId': assign_id,
-           'CustomerNameId': idd,
-           'DeliverCustomer': int(deliver_to_customer)})
-
     payload = {'__metadata': {'type': 'SP.Data.SalesHeaderListItem'},
                'Status': 'در انتظار صدور پیش فاکتور',
                'ShipOstanId': ship_ostan_id,
@@ -1047,13 +1038,7 @@ def update_item(*, username: str = Header(None),
                'CustomerNameId': idd,
                'DeliverCustomerId': deliver_to_customer}
 
-    # resulttt = auth_object.sharepoint_get_request(api_page)
-    # print(resulttt.json()['d']['results'][0])
-
     r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
-
-    # print(r.text)
-    # print(r.json())
 
     m = []
     parent_id = str(r.json()['d']['ID'])
