@@ -173,6 +173,7 @@ def read_agents_mid_services_list(*,
         result = auth_object.sharepoint_get_request(endpoint_uri)
         if result.status_code == requests.codes.ok:
             if len(result.json()['d']['results']) == 0:
+                print(result.json()['d']['results'])
                 return {"status": 404, "error_type": "no such item", "error_result": "no result"}
             else:
                 json_result = result.json()['d']['results']
@@ -796,7 +797,7 @@ def update_item(*, username: str = Header(None),
                'DeffectedBatterySerialId': deffected_battery_serial_id,
                'ReplaceBatterySerialId': replace_battery_serial_id,
                'ReplacedBYUserNameId': replaced_by_username_id,
-               'Title': 'New Request From Mobile Application'}
+               'SubmitBy': 'PWA'}
 
     r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
     ActivationCode = ''.join(random.choices(string.digits, k=10))
