@@ -991,7 +991,8 @@ def update_item(*, username: str = Header(None),
                 product_name_id: str = Header(None),
                 product_brand_id: str = Header(None),
                 request_qty: str = Header(None),
-                count: str = Header(None)):
+                count: str = Header(None),
+                deliver_to_customer: str = Header(None)):
     sharepoint_contextinfo_url = site_url + '_api/contextinfo'
 
     filter_CustomerList = "_api/web/lists/getbytitle('CustomerList')/items?$select=CustomerLoginID/ID,*&$expand=CustomerLoginID&$filter=CustomerLoginID/ID eq " + customer_name_id
@@ -1037,7 +1038,8 @@ def update_item(*, username: str = Header(None),
                'ShipCityId': ship_city_id,
                'ShipAddress': ship_address,
                'AssignedListIDId': assign_id,
-               'CustomerNameId': idd}
+               'CustomerNameId': idd,
+               'Deliverto': deliver_to_customer}
 
     r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
 
