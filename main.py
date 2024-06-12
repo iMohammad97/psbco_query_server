@@ -100,10 +100,9 @@ def update_item(*, template: str = Header(None),
 
 @app.get("/customerlist/subset")
 def read_agents_subsets_list(*,
-                         username: str = Header(None),
-                         password: str = Header(None),
-                         filter: str = Header(None)):
-
+                             username: str = Header(None),
+                             password: str = Header(None),
+                             filter: str = Header(None)):
     domain = "psbco.org"
     site_url = "http://sp.psbco.org/"
 
@@ -142,10 +141,9 @@ def read_agents_subsets_list(*,
 
 @app.get("/customermidlist/sales")
 def read_agents_mid_sales_list(*,
-                         username: str = Header(None),
-                         password: str = Header(None),
-                         filter: str = Header(None)):
-
+                               username: str = Header(None),
+                               password: str = Header(None),
+                               filter: str = Header(None)):
     domain = "psbco.org"
     site_url = "http://sp.psbco.org/"
 
@@ -184,10 +182,9 @@ def read_agents_mid_sales_list(*,
 
 @app.get("/customermidlist/services")
 def read_agents_mid_services_list(*,
-                         username: str = Header(None),
-                         password: str = Header(None),
-                         filter: str = Header(None)):
-
+                                  username: str = Header(None),
+                                  password: str = Header(None),
+                                  filter: str = Header(None)):
     domain = "psbco.org"
     site_url = "http://sp.psbco.org/"
 
@@ -1038,8 +1035,7 @@ def update_item(*, username: str = Header(None),
                'ShipCityId': ship_city_id,
                'ShipAddress': ship_address,
                'AssignedListIDId': assign_id,
-               'CustomerNameId': idd,
-               'Deliverto': deliver_to_customer}
+               'CustomerNameId': idd}
 
     r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
 
@@ -1072,6 +1068,7 @@ def update_item(*, username: str = Header(None),
                        'ProductNameId': int(product_name_id[i]),
                        'RequestedQTY': int(request_qty[i]),
                        'ProductBrandId': int(product_brand_id[i]),
+                       'Deliverto': deliver_to_customer,
                        }
 
             g = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
