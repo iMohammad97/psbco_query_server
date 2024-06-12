@@ -1036,7 +1036,7 @@ def update_item(*, username: str = Header(None),
                'ShipAddress': ship_address,
                'AssignedListIDId': assign_id,
                'CustomerNameId': idd,
-               'DeliverCustomer': deliver_to_customer})
+               'DeliverCustomer': int(deliver_to_customer)})
 
     payload = {'__metadata': {'type': 'SP.Data.SalesHeaderListItem'},
                'Status': 'در انتظار صدور پیش فاکتور',
