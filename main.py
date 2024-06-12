@@ -98,6 +98,48 @@ def update_item(*, template: str = Header(None),
     return {"status": r.status_code, "response": req_response_json}
 
 
+@app.get("/customerlist/subset")
+def read_agents_subsets_list(*,
+                         username: str = Header(None),
+                         password: str = Header(None),
+                         filter: str = Header(None)):
+
+    domain = "psbco.org"
+    site_url = "http://sp.psbco.org/"
+
+    auth_object = UserAuthentication(username, password, domain, site_url)
+    result = auth_object.authenticate()
+    sharepoint_contextinfo_url = site_url + '/_api/contextinfo'
+
+    auth = HttpNtlmAuth(username, password)
+
+    headers = {
+        "Accept": "application/json; odata=verbose",
+        "Content-Type": "application/json; odata=verbose",
+        "odata": "verbose",
+        "X-RequestForceAuthentication": "true"
+    }
+
+    # First of all get the context info
+    r = requests.post(sharepoint_contextinfo_url, auth=auth, headers=headers, verify=False)
+
+    form_digest_value = r.json()['d']['GetContextWebInformation']['FormDigestValue']
+
+    # We want to extract all the list presents in the site
+    endpoint_uri = "_api/web/lists/getbytitle('CustomerList')/items" + filter
+    if result:  # login successfully
+        result = auth_object.sharepoint_get_request(endpoint_uri)
+        if result.status_code == requests.codes.ok:
+            if len(result.json()['d']['results']) == 0:
+                return {"status": 404, "error_type": "no such item", "error_result": "no result"}
+            else:
+                json_result = result.json()['d']['results']
+                return {"status": 200, "count": len(result.json()['d']['results']), "item": json_result}
+        return {"status": result.status_code, "error_type": "no such item", "error_result": "no result"}
+    else:
+        return result
+
+
 @app.get("/customermidlist/sales")
 def read_agents_mid_sales_list(*,
                          username: str = Header(None),
