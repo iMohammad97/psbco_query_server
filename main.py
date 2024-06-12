@@ -1068,7 +1068,7 @@ def update_item(*, username: str = Header(None),
                        'ProductNameId': int(product_name_id[i]),
                        'RequestedQTY': int(request_qty[i]),
                        'ProductBrandId': int(product_brand_id[i]),
-                       'Deliverto': deliver_to_customer,
+                       'DeliverTo': deliver_to_customer,
                        }
 
             g = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
