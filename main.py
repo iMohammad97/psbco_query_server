@@ -1029,6 +1029,8 @@ def update_item(*, username: str = Header(None),
         # "X-HTTP-Method": "MERGE"
     }
 
+    print(deliver_to_customer)
+
     payload = {'__metadata': {'type': 'SP.Data.SalesHeaderListItem'},
                'Status': 'در انتظار صدور پیش فاکتور',
                'ShipOstanId': ship_ostan_id,
