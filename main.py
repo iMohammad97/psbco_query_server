@@ -1048,7 +1048,7 @@ def update_item(*, username: str = Header(None),
                'DeliverCustomer': deliver_to_customer}
 
     resulttt = auth_object.sharepoint_get_request(api_page)
-    print(resulttt.json())
+    print(resulttt.json()['d']['results'][0])
 
 
     r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
