@@ -1042,6 +1042,9 @@ def update_item(*, username: str = Header(None),
 
     r = requests.post(api_page, json=payload, auth=auth, headers=update_headers, verify=False)
 
+    print(r.text)
+    print(r.json())
+
     m = []
     parent_id = str(r.json()['d']['ID'])
     # Details
