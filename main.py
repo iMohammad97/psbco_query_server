@@ -71,6 +71,9 @@ app.add_middleware(
 def read_root():
     return {"Hello": "World"}
 
+@app.get("/pwa/applink/")
+def read_root():
+    return {"pwa_link": "http://app.psbco.org:8080"}
 
 @app.get("/pwa/v1/sendSMS/")
 def update_item(*, template: str = Header(None),
